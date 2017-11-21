@@ -12,11 +12,12 @@ fn main() {
 
 
     // Compile and link pung C++ PIR shim
-    gcc::Config::new()
+    gcc::Build::new()
                  .file("src/pir/cpp/pungPIR.cpp")
                  .include("deps/xpir/")
                  .flag("-std=c++11")
                  .flag("-fopenmp")
+                 .flag("-Wno-unused-parameter")
                  .pic(true)
                  .cpp(true)
                  .compile("libpung_pir.a");
@@ -30,4 +31,11 @@ fn main() {
 
     println!("cargo:rustc-link-search=native={}/build/pir", dst.display());
     println!("cargo:rustc-link-lib=static=pir_static");
+
+    // Dynamic libraries needed by XPIR
+    println!("cargo:rustc-link-lib=gomp");
+    println!("cargo:rustc-link-lib=gmp");
+    println!("cargo:rustc-link-lib=mpfr");
+    println!("cargo:rustc-link-lib=boost_thread");
+    println!("cargo:rustc-link-lib=boost_system");
 }
